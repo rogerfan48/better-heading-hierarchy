@@ -1,0 +1,61 @@
+$color-h1-d: rgb(66, 128, 95) !important;
+$color-h2-d: rgb(64, 130, 115) !important;
+$color-h3-d: rgb(62, 125, 127) !important;
+$color-h4-d: rgb(58, 114, 125) !important;
+$color-h5-d: rgb(54, 108, 131) !important;
+$color-h6-d: rgb(56, 91, 123) !important;
+
+.rgh-div, .rgh-div-head {
+  position: relative;
+}
+.rgh-div {
+  padding-left: 15px;
+}
+.rgh-h1-head, .rgh-h1 { margin-left: 0px; }
+.rgh-h2-head, .rgh-h2 { margin-left: 10px; }
+.rgh-h3-head, .rgh-h3 { margin-left: 20px; }
+.rgh-h4-head, .rgh-h4 { margin-left: 30px; }
+.rgh-h5-head, .rgh-h5 { margin-left: 40px; }
+.rgh-h6-head, .rgh-h6 { margin-left: 50px; }
+.rgh-line {
+  position: absolute;
+  height: calc(100% + 10px + 1.5px);
+  width: 2.5px;
+  left: 0;
+  top: -10px;
+  border-radius: 2px;
+}
+.rgh-line-h1 { background-color: $color-h1-d; }
+.rgh-line-h2 { background-color: $color-h2-d; }
+.rgh-line-h3 { background-color: $color-h3-d; }
+.rgh-line-h4 { background-color: $color-h4-d; }
+.rgh-line-h5 { background-color: $color-h5-d; }
+.rgh-line-h6 { background-color: $color-h6-d; }
+.rgh-top32 {
+  height: calc(100% + 32 * 2px - 10px + 1.5px) !important;
+  top: -32px !important;
+}
+.rgh-top16 {
+  height: calc(100% + 16 * 2px - 10px + 1.5px) !important;
+  top: -16px !important;
+}
+.rgh-top2 {
+  height: calc(100% + 2px + 1.5px) !important;
+  top: -2px !important;
+}
+.rgh-top16.rgh-top2 {
+  height: calc(100% + 2px + 16px - 10px + 1.5px) !important;
+  top: -2px !important;
+}
+.rgh-top5 {
+  height: calc(100% + 5px + 1.5px) !important;
+  top: -5px !important;
+}
+.rgh-left10 { left: -10px !important; }
+.rgh-left20 { left: -20px !important; }
+.rgh-left30 { left: -30px !important; }
+.rgh-left40 { left: -40px !important; }
+.rgh-left50 { left: -50px !important; }
+.rgh-m-top-16 {
+  margin-top: 16px;
+}

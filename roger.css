@@ -1,0 +1,236 @@
+body {
+  --file-line-width: none !important;
+}
+
+.cm-sizer {
+  max-width: min(80vw, 1050px) !important;
+}
+
+.markdown-preview-sizer {
+  max-width: min(75vw, 1000px) !important;
+}
+
+body {
+  --font-text-theme: "Swei Gothic CJK TC";
+}
+
+code[class*=language-],
+pre[class*=language-] {
+  font-family: "MesloLGS NF", var(--font-text-theme), var(--default-font) !important;
+}
+
+a.tag {
+  font-style: normal;
+}
+
+.markdown-preview-view {
+  --p-spacing: 10px;
+}
+.markdown-preview-view table {
+  margin: 10px 0 !important;
+}
+.markdown-preview-view div:has(> table) {
+  overflow-x: initial !important;
+}
+.markdown-preview-view blockquote, .markdown-preview-view pre {
+  margin: 16px 0 !important;
+}
+.markdown-preview-view hr {
+  margin: 32px 0 !important;
+}
+.markdown-preview-view pre {
+  background-color: #12121d !important;
+  box-shadow: 2px 2px 7px #5b5b5b;
+}
+.markdown-preview-view .cm-strong, .markdown-preview-view strong {
+  padding: 0px !important;
+  color: #ffd2a1;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-color: unset !important;
+  background-image: unset !important;
+}
+.markdown-preview-view .cm-strong::selection, .markdown-preview-view strong::selection {
+  padding: 0px !important;
+  color: #ffd2a1;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+}
+.markdown-preview-view .cm-em, .markdown-preview-view em, .markdown-preview-view i {
+  color: #af94e0 !important;
+  font-style: unset !important;
+}
+.markdown-preview-view mark {
+  border-radius: 3px;
+  padding: 0 5px;
+}
+.markdown-preview-view span.internal-embed.media-embed.image-embed > img {
+  max-width: 550px !important;
+}
+.markdown-preview-view h1, .markdown-preview-view h2, .markdown-preview-view h3, .markdown-preview-view h4, .markdown-preview-view h5, .markdown-preview-view h6 {
+  font-family: "Publico Text", "Lava Kannada", "Swei Gothic CJK TC", var(--font-text-theme) !important;
+  letter-spacing: 0.5px !important;
+  word-spacing: -0.6px !important;
+  font-size: 22px !important;
+  margin: 10px 0 0 0 !important;
+  padding: 0 !important;
+  height: 26px;
+  line-height: 26px;
+  vertical-align: text-bottom !important;
+}
+.markdown-preview-view div:has(> :is(h1, h2, h3, h4, h5, h6)) + div > :not(h1, h2, h3, h4, h5, h6, hr, div) {
+  margin-top: 2px !important;
+}
+.markdown-preview-view div:has(> h1) + div > :is(h2, h3, h4, h5, h6),
+.markdown-preview-view div:has(> h2) + div > :is(h3, h4, h5, h6),
+.markdown-preview-view div:has(> h3) + div > :is(h4, h5, h6),
+.markdown-preview-view div:has(> h4) + div > :is(h5, h6),
+.markdown-preview-view div:has(> h5) + div > :is(h6) {
+  margin-top: 5px !important;
+}
+.markdown-preview-view li {
+  margin-left: 28px !important;
+  z-index: 1;
+}
+.markdown-preview-view ul > li.task-list-item {
+  padding-left: 0px;
+  text-indent: -16px;
+}
+.markdown-preview-view .contains-task-list .task-list-item ul.contains-task-list::before {
+  left: -13.6px !important;
+}
+.markdown-preview-view .heading-collapse-indicator {
+  z-index: 1;
+}
+.markdown-preview-view .internal-link {
+  transition: all 0.15s ease-in-out !important;
+}
+.markdown-preview-view .internal-link:hover {
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h1 .internal-link, .markdown-preview-view h1 .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h1 .internal-link:hover, .markdown-preview-view h1 .external-link:hover {
+  -webkit-text-fill-color: inherit;
+  color: var(--text-normal);
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h2 .internal-link, .markdown-preview-view h2 .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h2 .internal-link:hover, .markdown-preview-view h2 .external-link:hover {
+  -webkit-text-fill-color: inherit;
+  color: var(--text-normal);
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h3 .internal-link, .markdown-preview-view h3 .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h3 .internal-link:hover, .markdown-preview-view h3 .external-link:hover {
+  -webkit-text-fill-color: inherit;
+  color: var(--text-normal);
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h4 .internal-link, .markdown-preview-view h4 .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h4 .internal-link:hover, .markdown-preview-view h4 .external-link:hover {
+  -webkit-text-fill-color: inherit;
+  color: var(--text-normal);
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h5 .internal-link, .markdown-preview-view h5 .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h5 .internal-link:hover, .markdown-preview-view h5 .external-link:hover {
+  -webkit-text-fill-color: inherit;
+  color: var(--text-normal);
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h6 .internal-link, .markdown-preview-view h6 .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h6 .internal-link:hover, .markdown-preview-view h6 .external-link:hover {
+  -webkit-text-fill-color: inherit;
+  color: var(--text-normal);
+  transition: all 0.15s ease-in-out;
+}
+.markdown-preview-view h1 {
+  color: rgb(45, 250, 164) !important;
+}
+.markdown-preview-view h2 {
+  color: rgb(39, 253, 214) !important;
+}
+.markdown-preview-view h3 {
+  color: rgb(44, 241, 244) !important;
+}
+.markdown-preview-view h4 {
+  color: rgb(42, 217, 240) !important;
+}
+.markdown-preview-view h5 {
+  color: rgb(41, 202, 255) !important;
+}
+.markdown-preview-view h6 {
+  color: rgb(71, 162, 240) !important;
+}
+.markdown-preview-view .internal-link {
+  color: #acf0e6;
+}
+.markdown-preview-view .external-link {
+  color: #f1ddef;
+}
+.markdown-preview-view .contains-task-list .task-list-item::before {
+  top: 6px;
+}
+.markdown-preview-view .contains-task-list .task-list-item::after {
+  top: 13px;
+}
+.markdown-preview-view .rg-nav {
+  display: flex;
+  justify-content: space-between;
+  border: 2px solid rgb(141, 141, 141);
+  border-radius: 5px;
+  margin: 10px 10px 5px;
+  padding: 5px 15px;
+}
+
+.cm-content .cm-line {
+  font-size: 16px;
+  line-height: 1.4;
+}
+.cm-content .cm-formatting.cm-formatting-header.cm-header {
+  opacity: 1;
+  color: #aaaaaa;
+}
+.cm-content .cm-header-1 {
+  color: #aaaaaa;
+}
+.cm-content .cm-header-2 {
+  color: #aaaaaa;
+}
+.cm-content .cm-header-3 {
+  color: #aaaaaa;
+}
+.cm-content .cm-header-4 {
+  color: #aaaaaa;
+}
+.cm-content .cm-header-5 {
+  color: #aaaaaa;
+}
+.cm-content .cm-header-6 {
+  color: #aaaaaa;
+}
+.cm-content span.cm-hmd-internal-link {
+  color: #cccccc;
+}
+
+/*# sourceMappingURL=roger.css.map */
