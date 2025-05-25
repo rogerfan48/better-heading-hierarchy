@@ -1,23 +1,23 @@
 import { MarkdownView, Plugin, MarkdownPostProcessor, MarkdownPostProcessorContext, MarkdownRenderChild, TFile } from "obsidian";
 import { App, PluginSettingTab, Setting } from "obsidian";
 
-interface MyPluginSettings {
+interface BetterHeadingHierarchySettings {
     enableAdditionalCss: boolean;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: BetterHeadingHierarchySettings = {
     enableAdditionalCss: true,
 };
 
-export default class MyPlugin extends Plugin {
-    settings: MyPluginSettings;
+export default class BetterHeadingHierarchyPlugin extends Plugin {
+    settings: BetterHeadingHierarchySettings;
     prevHeading: string | null;
     isPrevHeading: boolean;
     private rogerStyleEl: HTMLStyleElement | null = null;
 
     async onload() {
         await this.loadSettings();
-        this.addSettingTab(new MyPluginSettingTab(this.app, this));
+        this.addSettingTab(new BetterHeadingHierarchySettingTab(this.app, this));
         this.updateCss();
 
         this.prevHeading = null;
@@ -213,7 +213,7 @@ export default class MyPlugin extends Plugin {
         }
         if (this.settings.enableAdditionalCss) {
             try {
-                const pluginCssPath = `.obsidian/plugins/${this.manifest.id}/roger.css`;
+                const pluginCssPath = `${this.app.vault.configDir}/plugins/${this.manifest.id}/roger.css`;
                 const cssText = await this.app.vault.adapter.read(pluginCssPath);
                 const el = document.createElement("style");
                 el.textContent = cssText;
@@ -235,10 +235,10 @@ export default class MyPlugin extends Plugin {
     }
 }
 
-class MyPluginSettingTab extends PluginSettingTab {
-    plugin: MyPlugin;
+class BetterHeadingHierarchySettingTab extends PluginSettingTab {
+    plugin: BetterHeadingHierarchyPlugin;
 
-    constructor(app: App, plugin: MyPlugin) {
+    constructor(app: App, plugin: BetterHeadingHierarchyPlugin) {
         super(app, plugin);
         this.plugin = plugin;
     }
