@@ -246,7 +246,6 @@ class BetterHeadingHierarchySettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.createEl("h1", { text: "Better Heading Hierarchy - Setting" });
 
         new Setting(containerEl)
             .setName("Enable additional author-styled CSS")
