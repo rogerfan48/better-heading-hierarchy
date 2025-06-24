@@ -59,3 +59,218 @@ $color-h6-d: rgb(56, 91, 123) !important;
 .rgh-m-top-16 {
   margin-top: 16px;
 }
+
+/* --- Optional Author-Styled CSS --- */
+body.better-headings-author-style {
+  // SEC: color set
+  $color-h1: rgb(45, 250, 164) !important;
+  $color-h2: rgb(39, 253, 214) !important;
+  $color-h3: rgb(44, 241, 244) !important;
+  $color-h4: rgb(42, 217, 240) !important;
+  $color-h5: rgb(41, 202, 255) !important;
+  $color-h6: rgb(71, 162, 240) !important;
+  // - - - - - - - - - - - //
+  $cm-color-header: #aaaaaa;
+  $cm-color-link-text: #cccccc;
+  $cm-line-height: 1.4;
+
+  // SEC: BOTH
+  // INFO: make line not only limited in 700px
+  --file-line-width: none !important;   // * cancel max-width limitation * //
+  --font-text-theme: "Swei Gothic CJK TC";
+  
+  .cm-sizer {
+    max-width: min(80vw, 1050px) !important;
+  }
+  .markdown-preview-sizer {
+    max-width: min(75vw, 1000px) !important;
+  }
+
+  // INFO: font
+  code[class*='language-'],
+  pre[class*='language-'] {
+    font-family: "JetBrainsMono Nerd Font Mono", "MesloLGS NF", var(--font-text-theme) !important;
+  }
+  a.tag {   // tag
+    font-style: normal;
+  }
+
+  // SEC: Read Mode
+  .markdown-preview-view {
+    // INFO: 各元素 上下margin 重調整，以利 roger-theme-plugin
+    --p-spacing: 10px;  // * p * //
+    table {
+    margin: 10px 0 !important;
+    }
+    div:has(>table) {
+    overflow-x: initial !important;   // * 避免 margin 無法與其他元素的 margin 合併 * //
+    }
+    blockquote, pre {
+    margin: 16px 0 !important;
+    }
+    hr {
+    margin: 32px 0 !important;
+    }
+    
+    pre {
+    background-color: #12121d !important;
+    box-shadow: 2px 2px 7px #5b5b5b;
+    }
+
+    .cm-strong, strong {
+    padding: 0px !important;
+    color: #ffd2a1;
+    background-clip: unset !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-color: unset !important;
+    background-image: unset !important;
+    }
+    .cm-strong::selection, strong::selection {
+    padding: 0px !important;
+    color: #ffd2a1;
+    background-clip: unset !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    }
+
+    .cm-em, em, i {
+    color: #af94e0 !important;
+    font-style: unset !important;
+    }
+
+    mark {
+    border-radius: 3px;
+    padding: 0 5px;
+    }
+
+    span.internal-embed.media-embed.image-embed > img {
+    max-width: 550px !important;
+    }
+
+    // INFO: header font
+    h1, h2, h3, h4, h5, h6 {
+    font-family: "Publico Text", "Lava Kannada", "Swei Gothic CJK TC", var(--font-text-theme) !important;
+    letter-spacing: 0.5px !important;
+    word-spacing: -0.6px !important;
+
+    font-size: 22px !important;
+    margin: 10px 0 0 0 !important;
+    padding: 0 !important;
+    height: 26px;
+    line-height: 26px;
+    vertical-align: text-bottom !important;
+    }
+    // INFO: header後的非"header/hr"物件
+    div:has(>:is(h1,h2,h3,h4,h5,h6))+div>:not(h1,h2,h3,h4,h5,h6,hr,div) {
+    margin-top: 2px !important;
+    }
+    // INFO: 低層級header 接續在 高層級header 後面
+    div:has(>h1)+div>:is(h2,h3,h4,h5,h6),
+    div:has(>h2)+div>:is(h3,h4,h5,h6),
+    div:has(>h3)+div>:is(h4,h5,h6),
+    div:has(>h4)+div>:is(h5,h6),
+    div:has(>h5)+div>:is(h6) {
+    margin-top: 5px !important;
+    }
+
+    // INFO: li 向左修正
+    li {
+    margin-left: 28px !important;
+    z-index: 1;
+    }
+    ul > li.task-list-item {
+    padding-left: 0px;
+    text-indent: -16px;
+    }
+    .contains-task-list .task-list-item ul.contains-task-list::before {
+    left: -13.6px !important;
+    }
+
+    .heading-collapse-indicator {
+    z-index: 1;
+    }
+
+    // INFO: link 過度動畫
+    .internal-link {
+    transition: all 0.15s ease-in-out !important;
+    }
+    .internal-link:hover {
+    transition: all 0.15s ease-in-out;
+    }
+    
+    %color-h1 { color: $color-h1; }
+    %color-h2 { color: $color-h2; }
+    %color-h3 { color: $color-h3; }
+    %color-h4 { color: $color-h4; }
+    %color-h5 { color: $color-h5; }
+    %color-h6 { color: $color-h6; }
+    $headers: h1, h2, h3, h4, h5, h6;
+    @each $var in $headers {
+    #{$var} .internal-link, #{$var} .external-link {
+      color: inherit;
+      transition: all 0.15s ease-in-out;
+    
+      &:hover {
+      -webkit-text-fill-color: inherit;
+      color: var(--text-normal);
+      transition: all 0.15s ease-in-out;
+      }
+    }
+    }
+
+    h1 { color: $color-h1; }
+    h2 { color: $color-h2; }
+    h3 { color: $color-h3; }
+    h4 { color: $color-h4; }
+    h5 { color: $color-h5; }
+    h6 { color: $color-h6; }
+    .internal-link {
+    color: #acf0e6;
+    }
+    .external-link {
+    color: #f1ddef;
+    }
+
+    // INFO: Adjust the position of the checkbox at the left of the line
+    .contains-task-list .task-list-item {
+    &::before {
+      top: 6px;
+    }
+    &::after {
+      top: 13px;
+    }
+    }
+
+    // INFO: Earth Science nav bar
+    .rg-nav {
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid rgb(141, 141, 141);
+    border-radius: 5px;
+    margin: 10px 10px 5px;
+    padding: 5px 15px;
+    }
+  }
+
+  // SEC: Edit Mode
+  .cm-content {
+    .cm-line {
+    font-size: 16px;
+    line-height: $cm-line-height;
+    }
+    .cm-formatting.cm-formatting-header.cm-header {
+    opacity: 1;
+    color: $cm-color-header;
+    }
+    @each $var in (1,2,3,4,5,6) {
+    .cm-header-#{$var} {
+      color: $cm-color-header;
+    }
+    }
+    span.cm-hmd-internal-link {
+    color: $cm-color-link-text;
+    }
+  }
+}
+
