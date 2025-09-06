@@ -115,7 +115,7 @@
 /* --- Optional Author-Styled CSS --- */
 body.better-headings-author-style {
   --file-line-width: none !important;
-  --font-text-theme: "Swei Gothic CJK TC";
+  --font-text-theme: "jf-jinxuan-book", "jf-jinxuan", "Swei Gothic CJK TC";
 }
 body.better-headings-author-style .cm-sizer {
   max-width: min(80vw, 1050px) !important;
@@ -177,7 +177,7 @@ body.better-headings-author-style .markdown-preview-view span.internal-embed.med
   max-width: 550px !important;
 }
 body.better-headings-author-style .markdown-preview-view h1, body.better-headings-author-style .markdown-preview-view h2, body.better-headings-author-style .markdown-preview-view h3, body.better-headings-author-style .markdown-preview-view h4, body.better-headings-author-style .markdown-preview-view h5, body.better-headings-author-style .markdown-preview-view h6 {
-  font-family: "Publico Text", "Lava Kannada", "Swei Gothic CJK TC", var(--font-text-theme) !important;
+  font-family: "Publico Text", "Lava Kannada", "jf-jinxuan", "Swei Gothic CJK TC", var(--font-text-theme) !important;
   letter-spacing: 0.5px !important;
   word-spacing: -0.6px !important;
   font-size: 22px !important;

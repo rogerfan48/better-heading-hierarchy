@@ -1,7 +1,7 @@
 {
 	"id": "better-heading-hierarchy",
 	"name": "Better Heading Hierarchy",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"minAppVersion": "0.15.0",
 	"description": "Add guide lines to make the hierarchy of Markdown headings more visually clear.",
 	"author": "rogerfan48",

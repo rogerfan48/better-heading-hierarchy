@@ -77,9 +77,9 @@ body.better-headings-author-style {
   // SEC: BOTH
   // INFO: make line not only limited in 700px
   --file-line-width: none !important;   // * cancel max-width limitation * //
-  --font-text-theme: "Swei Gothic CJK TC";
-  
+  --font-text-theme: "jf-jinxuan-book", "jf-jinxuan", "Swei Gothic CJK TC";
   .cm-sizer {
+
     max-width: min(80vw, 1050px) !important;
   }
   .markdown-preview-sizer {
@@ -150,7 +150,7 @@ body.better-headings-author-style {
 
     // INFO: header font
     h1, h2, h3, h4, h5, h6 {
-    font-family: "Publico Text", "Lava Kannada", "Swei Gothic CJK TC", var(--font-text-theme) !important;
+    font-family: "Publico Text", "Lava Kannada", "jf-jinxuan", "Swei Gothic CJK TC", var(--font-text-theme) !important;
     letter-spacing: 0.5px !important;
     word-spacing: -0.6px !important;
 
