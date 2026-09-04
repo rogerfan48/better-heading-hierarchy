@@ -41,13 +41,18 @@ export function createReadingViewProcessor(
     const index = findSectionIndex(cache.sections, sourceRange.lineStart);
     if (index < 0) return;
 
+    const sectionType = cache.sections[index].type;
+    const isHeading = sectionType === "heading";
+
+    // Tagged on every block, guide lines or not, so a snippet can address any of
+    // them structurally.
+    el.addClass(`rgh-section-${sectionType}`);
+    removeExistingGuideLines(el);
+
     const depth = depths[index];
-    if (depth < 1) return;
+    if (depth < 1 && !isHeading) return;
 
     const previousDepth = index > 0 ? depths[index - 1] : 0;
-    const isHeading = cache.sections[index].type === "heading";
-
-    removeExistingGuideLines(el);
     el.addClass("rgh-block", depthClass(depth));
     el.toggleClass("rgh-heading", isHeading);
 

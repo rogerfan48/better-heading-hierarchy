@@ -32,7 +32,7 @@ body.theme-light {
   --rgh-color-6: rgb(36, 73, 105);
 }
 
-@for $i from 1 through $levels {
+@for $i from 0 through $levels {
   .rgh-depth-#{$i} {
     --rgh-depth: #{$i};
   }

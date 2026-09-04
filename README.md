@@ -111,7 +111,8 @@ Appearance → CSS snippets**. Once installed the file is yours — edit it free
 overwrite your changes unless you explicitly ask it to.
 
 It is written for the default Obsidian theme in dark mode, and every section of it is commented and
-safe to delete piece by piece. It leaves the guide lines at the plugin's default colors and only
+safe to delete piece by piece. Its page width works through Obsidian's own `--file-line-width`, so
+**Readable line length** needs to be on for the width cap and centering to apply. It leaves the guide lines at the plugin's default colors and only
 recolours the heading text; the comment at the top of the file says how to tint the lines to match.
 
 If you want it to look exactly like the screenshot, install the fonts it asks for:
@@ -148,6 +149,9 @@ Reading view and the editor need two different implementations, so the plugin sh
 Installing the companion snippet writes a file through Obsidian's public vault API. *Enabling* a
 snippet has no public API, so that step uses an internal one; if it is ever removed, the file is
 still written and the settings tab tells you to switch it on yourself.
+
+The plugin makes no network requests. The one link it can open is the **Open documentation** button
+in its settings, which hands this readme's URL to your browser.
 
 ### Known limitations
 

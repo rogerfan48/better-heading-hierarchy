@@ -26,14 +26,15 @@ export default class BetterHeadingHierarchyPlugin extends Plugin {
     if (this.settings.autoInstallSnippet) {
       this.app.workspace.onLayoutReady(() => {
         installSnippet(this.app, { overwrite: false }).catch(() => {
-          new Notice("Better Heading Hierarchy: could not install the companion snippet.");
+          new Notice("Could not install the companion snippet.");
         });
       });
     }
   }
 
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const stored = (await this.loadData()) as Partial<BetterHeadingHierarchySettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, stored);
   }
 
   async saveSettings() {
@@ -85,7 +86,7 @@ class BetterHeadingHierarchySettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Editing view")
-      .setDesc("Show guide lines in Live Preview and Source mode.")
+      .setDesc("Show guide lines in live preview and source mode.")
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.showInEditingView).onChange(async (value) => {
           this.plugin.settings.showInEditingView = value;

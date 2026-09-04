@@ -2,6 +2,26 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 2.0.1
+
+### Changed
+
+- Reading view tags every block with its section type (`rgh-section-table`, …) and tags top-level
+  headings, so a snippet can target blocks without `:has()`.
+- The companion snippet drops 36 of its 37 `!important` declarations and all 8 `:has()` selectors,
+  outranking Obsidian by specificity instead. The one that remains overrides an overflow Obsidian
+  sets on table blocks.
+- Editor code blocks get their own font size; reading-view code blocks get tighter line spacing.
+- `minAppVersion` is now 1.2.3, which `ButtonComponent.setDisabled` requires.
+- Lint with `eslint-plugin-obsidianmd`.
+
+### Fixed
+
+- Selecting bold text showed no highlight: 2.0.0 merged the `::selection` rule into the base rule,
+  giving it a `background-color: unset` it never had.
+- Links inside a heading no longer take the ordinary link color.
+- Two settings strings were not in sentence case.
+
 ## 2.0.0
 
 ### Added

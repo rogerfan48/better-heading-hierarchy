@@ -6,13 +6,14 @@
    Fonts it expects: jf-jinxuan (or Swei Gothic CJK TC) for text,
    JetBrainsMono Nerd Font Mono for code. Falls back cleanly without them.
 
-   `!important` throughout: this overrides Obsidian's app CSS, which uses
-   selectors a snippet cannot outrank. The plugin's own stylesheet has none. */
+   Rules here outrank Obsidian's by repeating a class (`.x.x` matches exactly the
+   same elements but counts twice in specificity), not by forcing priority. */
 
 body {
   /* Obsidian's hook for the body text font. */
   --font-text-theme: "jf-jinxuan-book", "jf-jinxuan", "Swei Gothic CJK TC";
-  --file-line-width: none !important;
+  --rg-width-editor: min(80vw, 850px);
+  --rg-width-preview: min(75vw, 800px);
 
   --rg-font-code: "JetBrainsMono Nerd Font Mono", "MesloLGS NF";
   --rg-font-heading: "Publico Text", "Lava Kannada", "jf-jinxuan", "Swei Gothic CJK TC";
@@ -34,27 +35,35 @@ body {
   --rg-gap-after-heading: 2px;
   --rg-gap-between-headings: 5px;
   --rg-block-margin: 16px;
+  --rg-code-line-height: 1.3;
+  --rg-code-font-size: 14px;
   --rg-hr-margin: 32px;
 }
 
-/* Centering is Obsidian's, but only under .is-readable-line-width. Pinning it
-   here keeps the width capped whether that setting is on or off. */
-.cm-sizer,
-.markdown-preview-sizer {
-  margin-inline: auto !important;
+/* Two paths to the same width. With Readable line length on, Obsidian's own
+   rules win and read the variable; with it off, nothing competes and the plain
+   selectors apply. */
+.markdown-source-view {
+  --file-line-width: var(--rg-width-editor);
+}
+
+.markdown-preview-view {
+  --file-line-width: var(--rg-width-preview);
 }
 
 .cm-sizer {
-  max-width: min(80vw, 850px) !important;
+  max-width: var(--rg-width-editor);
+  margin-inline: auto;
 }
 
 .markdown-preview-sizer {
-  max-width: min(75vw, 800px) !important;
+  max-width: var(--rg-width-preview);
+  margin-inline: auto;
 }
 
-code[class*="language-"],
-pre[class*="language-"] {
-  font-family: var(--rg-font-code), var(--font-text-theme) !important;
+code[class*="language-"][class*="language-"],
+pre[class*="language-"][class*="language-"] {
+  font-family: var(--rg-font-code), var(--font-text-theme);
 }
 
 a.tag {
@@ -67,46 +76,45 @@ a.tag {
   --p-spacing: var(--rg-p-spacing);
 }
 
-.markdown-preview-view table {
-  margin: var(--rg-p-spacing) 0 !important;
+.markdown-preview-view.markdown-preview-view table {
+  margin: var(--rg-p-spacing) 0;
 }
 
-.markdown-preview-view blockquote,
-.markdown-preview-view pre {
-  margin: var(--rg-block-margin) 0 !important;
+.markdown-preview-view.markdown-preview-view blockquote,
+.markdown-preview-view.markdown-preview-view pre {
+  margin: var(--rg-block-margin) 0;
 }
 
-.markdown-preview-view hr {
-  margin: var(--rg-hr-margin) 0 !important;
+.markdown-preview-view.markdown-preview-view hr {
+  margin: var(--rg-hr-margin) 0;
 }
 
-.markdown-preview-view div:has(> table) {
+
+/* The guide lines overhang the bottom of their block by --rgh-tail, which turns
+   a table block into a scroll container because Obsidian gives it a non-visible
+   overflow. Restoring visible overflow drops the stray scrollbar. */
+.markdown-preview-view .rgh-section-table {
   overflow-x: initial !important;
 }
 
-.markdown-preview-view pre {
-  background-color: #12121d !important;
+.markdown-preview-view.markdown-preview-view pre {
+  background-color: #12121d;
   box-shadow: 2px 2px 7px #5b5b5b;
 }
 
-.markdown-preview-view strong,
-.markdown-preview-view .cm-strong,
-.markdown-preview-view strong::selection,
-.markdown-preview-view .cm-strong::selection {
-  padding: 0 !important;
-  color: #ffd2a1;
-  background-clip: unset !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  background-color: unset !important;
-  background-image: unset !important;
+.markdown-preview-view.markdown-preview-view pre,
+.markdown-preview-view.markdown-preview-view pre code {
+  line-height: var(--rg-code-line-height);
 }
 
-.markdown-preview-view em,
-.markdown-preview-view i,
-.markdown-preview-view .cm-em {
-  color: #af94e0 !important;
-  font-style: unset !important;
+.markdown-preview-view.markdown-preview-view strong {
+  color: #ffd2a1;
+}
+
+.markdown-preview-view.markdown-preview-view em,
+.markdown-preview-view.markdown-preview-view i {
+  color: #af94e0;
+  font-style: unset;
 }
 
 .markdown-preview-view mark {
@@ -114,76 +122,80 @@ a.tag {
   padding: 0 5px;
 }
 
-.markdown-preview-view span.internal-embed.media-embed.image-embed > img {
-  max-width: 550px !important;
+.markdown-preview-view.markdown-preview-view span.internal-embed.media-embed.image-embed > img {
+  max-width: 550px;
 }
 
 /* Headings: one size at every level. */
 
-.markdown-preview-view h1,
-.markdown-preview-view h2,
-.markdown-preview-view h3,
-.markdown-preview-view h4,
-.markdown-preview-view h5,
-.markdown-preview-view h6 {
-  font-family: var(--rg-font-heading), var(--font-text-theme) !important;
-  letter-spacing: 0.5px !important;
-  word-spacing: -0.6px !important;
-  font-size: 22px !important;
-  margin: var(--rg-heading-space-above) 0 0 !important;
-  padding: 0 !important;
+.markdown-preview-view.markdown-preview-view h1,
+.markdown-preview-view.markdown-preview-view h2,
+.markdown-preview-view.markdown-preview-view h3,
+.markdown-preview-view.markdown-preview-view h4,
+.markdown-preview-view.markdown-preview-view h5,
+.markdown-preview-view.markdown-preview-view h6 {
+  font-family: var(--rg-font-heading), var(--font-text-theme);
+  letter-spacing: 0.5px;
+  word-spacing: -0.6px;
+  font-size: 22px;
+  margin: var(--rg-heading-space-above) 0 0;
+  padding: 0;
   height: 26px;
   line-height: 26px;
-  vertical-align: text-bottom !important;
+  vertical-align: text-bottom;
 }
 
-.markdown-preview-view h1 { color: var(--rg-heading-1) !important; }
-.markdown-preview-view h2 { color: var(--rg-heading-2) !important; }
-.markdown-preview-view h3 { color: var(--rg-heading-3) !important; }
-.markdown-preview-view h4 { color: var(--rg-heading-4) !important; }
-.markdown-preview-view h5 { color: var(--rg-heading-5) !important; }
-.markdown-preview-view h6 { color: var(--rg-heading-6) !important; }
+/* The doubled class is not a typo: it matches exactly the same elements but
+   outranks Obsidian's .markdown-rendered h1 on specificity alone. */
+.markdown-preview-view.markdown-preview-view h1 { color: var(--rg-heading-1); }
+.markdown-preview-view.markdown-preview-view h2 { color: var(--rg-heading-2); }
+.markdown-preview-view.markdown-preview-view h3 { color: var(--rg-heading-3); }
+.markdown-preview-view.markdown-preview-view h4 { color: var(--rg-heading-4); }
+.markdown-preview-view.markdown-preview-view h5 { color: var(--rg-heading-5); }
+.markdown-preview-view.markdown-preview-view h6 { color: var(--rg-heading-6); }
 
-/* `:has()` is costly on very large notes; delete if scrolling drags. */
-.markdown-preview-view div:has(> :is(h1, h2, h3, h4, h5, h6)) + div > :not(h1, h2, h3, h4, h5, h6, hr, div) {
-  margin-top: var(--rg-gap-after-heading) !important;
+/* The plugin tags every block with .rgh-heading / .rgh-block / .rgh-depth-N, so
+   these match the same things the old shape-based rules did. .rgh-depth-N on a heading
+   is its level minus one, hence the pairs: "a heading deeper than the one above". */
+.markdown-preview-view.markdown-preview-view .rgh-heading + .rgh-block > :not(h1, h2, h3, h4, h5, h6, hr, div) {
+  margin-top: var(--rg-gap-after-heading);
 }
 
-.markdown-preview-view div:has(> h1) + div > :is(h2, h3, h4, h5, h6),
-.markdown-preview-view div:has(> h2) + div > :is(h3, h4, h5, h6),
-.markdown-preview-view div:has(> h3) + div > :is(h4, h5, h6),
-.markdown-preview-view div:has(> h4) + div > :is(h5, h6),
-.markdown-preview-view div:has(> h5) + div > :is(h6) {
-  margin-top: var(--rg-gap-between-headings) !important;
+.markdown-preview-view.markdown-preview-view .rgh-heading.rgh-depth-0 + .rgh-heading:is(.rgh-depth-1, .rgh-depth-2, .rgh-depth-3, .rgh-depth-4, .rgh-depth-5) > :is(h1, h2, h3, h4, h5, h6),
+.markdown-preview-view.markdown-preview-view .rgh-heading.rgh-depth-1 + .rgh-heading:is(.rgh-depth-2, .rgh-depth-3, .rgh-depth-4, .rgh-depth-5) > :is(h1, h2, h3, h4, h5, h6),
+.markdown-preview-view.markdown-preview-view .rgh-heading.rgh-depth-2 + .rgh-heading:is(.rgh-depth-3, .rgh-depth-4, .rgh-depth-5) > :is(h1, h2, h3, h4, h5, h6),
+.markdown-preview-view.markdown-preview-view .rgh-heading.rgh-depth-3 + .rgh-heading:is(.rgh-depth-4, .rgh-depth-5) > :is(h1, h2, h3, h4, h5, h6),
+.markdown-preview-view.markdown-preview-view .rgh-heading.rgh-depth-4 + .rgh-heading.rgh-depth-5 > :is(h1, h2, h3, h4, h5, h6) {
+  margin-top: var(--rg-gap-between-headings);
 }
 
 .markdown-preview-view .heading-collapse-indicator {
   z-index: 1;
 }
 
-.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .internal-link,
-.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .external-link {
+.markdown-preview-view.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .internal-link,
+.markdown-preview-view.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .external-link {
   color: inherit;
   transition: all 0.15s ease-in-out;
 }
 
-.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .internal-link:hover,
-.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .external-link:hover {
+.markdown-preview-view.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .internal-link:hover,
+.markdown-preview-view.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .external-link:hover {
   color: var(--text-normal);
   -webkit-text-fill-color: inherit;
 }
 
-.markdown-preview-view .internal-link {
+.markdown-preview-view.markdown-preview-view .internal-link {
   color: #acf0e6;
-  transition: all 0.15s ease-in-out !important;
+  transition: all 0.15s ease-in-out;
 }
 
 .markdown-preview-view .external-link {
   color: #f1ddef;
 }
 
-.markdown-preview-view li {
-  margin-left: 28px !important;
+.markdown-preview-view.markdown-preview-view li {
+  margin-left: 28px;
   z-index: 1;
 }
 
@@ -201,6 +213,10 @@ a.tag {
 .cm-content .cm-line {
   font-size: 16px;
   line-height: 1.4;
+}
+
+.cm-content .cm-line.HyperMD-codeblock {
+  font-size: var(--rg-code-font-size);
 }
 
 .cm-content .cm-formatting.cm-formatting-header.cm-header,

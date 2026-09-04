@@ -25,6 +25,10 @@ body.theme-light {
   --rgh-color-6: rgb(36, 73, 105);
 }
 
+.rgh-depth-0 {
+  --rgh-depth: 0;
+}
+
 .rgh-depth-1 {
   --rgh-depth: 1;
 }
