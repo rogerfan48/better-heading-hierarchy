@@ -1,342 +1,152 @@
-.rgh-div, .rgh-div-head {
+@charset "UTF-8";
+body {
+  --rgh-indent: 10px;
+  --rgh-content-gap: 15px;
+  --rgh-editor-gap: 20px;
+  --rgh-line-width: 2.5px;
+  --rgh-bleed: 2.5em;
+  --rgh-start-bleed: 4px;
+  --rgh-tail: 2px;
+  --rgh-editor-bleed: 1px;
+  --rgh-color-1: rgb(66, 128, 95);
+  --rgh-color-2: rgb(64, 130, 115);
+  --rgh-color-3: rgb(62, 125, 127);
+  --rgh-color-4: rgb(58, 114, 125);
+  --rgh-color-5: rgb(54, 108, 131);
+  --rgh-color-6: rgb(56, 91, 123);
+}
+
+body.theme-light {
+  --rgh-color-1: rgb(46, 110, 78);
+  --rgh-color-2: rgb(42, 112, 98);
+  --rgh-color-3: rgb(40, 107, 109);
+  --rgh-color-4: rgb(38, 96, 107);
+  --rgh-color-5: rgb(34, 90, 113);
+  --rgh-color-6: rgb(36, 73, 105);
+}
+
+.rgh-depth-1 {
+  --rgh-depth: 1;
+}
+
+.rgh-depth-2 {
+  --rgh-depth: 2;
+}
+
+.rgh-depth-3 {
+  --rgh-depth: 3;
+}
+
+.rgh-depth-4 {
+  --rgh-depth: 4;
+}
+
+.rgh-depth-5 {
+  --rgh-depth: 5;
+}
+
+.rgh-depth-6 {
+  --rgh-depth: 6;
+}
+
+/* Reading view */
+.rgh-block {
   position: relative;
+  padding-left: calc(var(--rgh-indent) * (var(--rgh-depth) - 1) + var(--rgh-content-gap));
 }
 
-.rgh-div {
-  padding-left: 15px;
-}
-
-.rgh-h1-head, .rgh-h1 {
-  margin-left: 0px;
-}
-
-.rgh-h2-head, .rgh-h2 {
-  margin-left: 10px;
-}
-
-.rgh-h3-head, .rgh-h3 {
-  margin-left: 20px;
-}
-
-.rgh-h4-head, .rgh-h4 {
-  margin-left: 30px;
-}
-
-.rgh-h5-head, .rgh-h5 {
-  margin-left: 40px;
-}
-
-.rgh-h6-head, .rgh-h6 {
-  margin-left: 50px;
+.rgh-block.rgh-heading {
+  padding-left: calc(var(--rgh-indent) * var(--rgh-depth));
 }
 
 .rgh-line {
   position: absolute;
-  height: calc(100% + 10px + 1.5px);
-  width: 2.5px;
-  left: 0;
-  top: -10px;
-  border-radius: 2px;
+  top: calc(-1 * var(--rgh-bleed));
+  height: calc(100% + var(--rgh-bleed) + var(--rgh-tail));
+  width: var(--rgh-line-width);
+  border-radius: var(--rgh-line-width);
+  pointer-events: none;
 }
 
-.rgh-line-h1 {
-  background-color: rgb(66, 128, 95) !important;
+.rgh-line.rgh-line-start {
+  top: calc(-1 * var(--rgh-start-bleed));
+  height: calc(100% + var(--rgh-start-bleed) + var(--rgh-tail));
 }
 
-.rgh-line-h2 {
-  background-color: rgb(64, 130, 115) !important;
+.rgh-line-l1 {
+  left: calc(var(--rgh-indent) * 0);
+  background-color: var(--rgh-color-1);
 }
 
-.rgh-line-h3 {
-  background-color: rgb(62, 125, 127) !important;
+.rgh-line-l2 {
+  left: calc(var(--rgh-indent) * 1);
+  background-color: var(--rgh-color-2);
 }
 
-.rgh-line-h4 {
-  background-color: rgb(58, 114, 125) !important;
+.rgh-line-l3 {
+  left: calc(var(--rgh-indent) * 2);
+  background-color: var(--rgh-color-3);
 }
 
-.rgh-line-h5 {
-  background-color: rgb(54, 108, 131) !important;
+.rgh-line-l4 {
+  left: calc(var(--rgh-indent) * 3);
+  background-color: var(--rgh-color-4);
 }
 
-.rgh-line-h6 {
-  background-color: rgb(56, 91, 123) !important;
+.rgh-line-l5 {
+  left: calc(var(--rgh-indent) * 4);
+  background-color: var(--rgh-color-5);
 }
 
-.rgh-top32 {
-  height: calc(100% + 64px - 10px + 1.5px) !important;
-  top: -32px !important;
+.rgh-line-l6 {
+  left: calc(var(--rgh-indent) * 5);
+  background-color: var(--rgh-color-6);
 }
 
-.rgh-top16 {
-  height: calc(100% + 32px - 10px + 1.5px) !important;
-  top: -16px !important;
+/* Editing view — the indent is a transparent left border.
+   Padding is taken: Obsidian sets padding-inline-start inline on list lines for
+   their hanging indent, and an inline style outranks a stylesheet. Margin is
+   taken too, forced to zero on every line. The border is the edge left over. */
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm {
+  position: relative;
+  border-left: calc(var(--rgh-indent) * (var(--rgh-depth) - 1) + var(--rgh-editor-gap)) solid transparent;
 }
 
-.rgh-top2 {
-  height: calc(100% + 2px + 1.5px) !important;
-  top: -2px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-cm-head {
+  border-left-width: calc(var(--rgh-indent) * var(--rgh-depth));
 }
 
-.rgh-top16.rgh-top2 {
-  height: calc(100% + 2px + 16px - 10px + 1.5px) !important;
-  top: -2px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * (var(--rgh-indent) * (var(--rgh-depth) - 1) + var(--rgh-editor-gap)));
+  top: calc(-1 * var(--rgh-editor-bleed));
+  bottom: calc(-1 * var(--rgh-editor-bleed));
+  width: var(--rgh-line-width);
+  background-color: var(--rgh-color-1);
+  pointer-events: none;
 }
 
-.rgh-top5 {
-  height: calc(100% + 5px + 1.5px) !important;
-  top: -5px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-cm-head::before {
+  left: calc(-1 * var(--rgh-indent) * var(--rgh-depth));
 }
 
-.rgh-left10 {
-  left: -10px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-depth-2::before {
+  box-shadow: calc(var(--rgh-indent) * 1) 0 0 var(--rgh-color-2);
 }
 
-.rgh-left20 {
-  left: -20px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-depth-3::before {
+  box-shadow: calc(var(--rgh-indent) * 1) 0 0 var(--rgh-color-2), calc(var(--rgh-indent) * 2) 0 0 var(--rgh-color-3);
 }
 
-.rgh-left30 {
-  left: -30px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-depth-4::before {
+  box-shadow: calc(var(--rgh-indent) * 1) 0 0 var(--rgh-color-2), calc(var(--rgh-indent) * 2) 0 0 var(--rgh-color-3), calc(var(--rgh-indent) * 3) 0 0 var(--rgh-color-4);
 }
 
-.rgh-left40 {
-  left: -40px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-depth-5::before {
+  box-shadow: calc(var(--rgh-indent) * 1) 0 0 var(--rgh-color-2), calc(var(--rgh-indent) * 2) 0 0 var(--rgh-color-3), calc(var(--rgh-indent) * 3) 0 0 var(--rgh-color-4), calc(var(--rgh-indent) * 4) 0 0 var(--rgh-color-5);
 }
 
-.rgh-left50 {
-  left: -50px !important;
+.markdown-source-view.mod-cm6 .cm-line.rgh-cm.rgh-depth-6::before {
+  box-shadow: calc(var(--rgh-indent) * 1) 0 0 var(--rgh-color-2), calc(var(--rgh-indent) * 2) 0 0 var(--rgh-color-3), calc(var(--rgh-indent) * 3) 0 0 var(--rgh-color-4), calc(var(--rgh-indent) * 4) 0 0 var(--rgh-color-5), calc(var(--rgh-indent) * 5) 0 0 var(--rgh-color-6);
 }
-
-.rgh-m-top-16 {
-  margin-top: 16px;
-}
-
-/* --- Optional Author-Styled CSS --- */
-body.better-headings-author-style {
-  --file-line-width: none !important;
-  --font-text-theme: "jf-jinxuan-book", "jf-jinxuan", "Swei Gothic CJK TC";
-}
-body.better-headings-author-style .cm-sizer {
-  max-width: min(80vw, 1050px) !important;
-}
-body.better-headings-author-style .markdown-preview-sizer {
-  max-width: min(75vw, 1000px) !important;
-}
-body.better-headings-author-style code[class*=language-],
-body.better-headings-author-style pre[class*=language-] {
-  font-family: "JetBrainsMono Nerd Font Mono", "MesloLGS NF", var(--font-text-theme) !important;
-}
-body.better-headings-author-style a.tag {
-  font-style: normal;
-}
-body.better-headings-author-style .markdown-preview-view {
-  --p-spacing: 10px;
-}
-body.better-headings-author-style .markdown-preview-view table {
-  margin: 10px 0 !important;
-}
-body.better-headings-author-style .markdown-preview-view div:has(> table) {
-  overflow-x: initial !important;
-}
-body.better-headings-author-style .markdown-preview-view blockquote, body.better-headings-author-style .markdown-preview-view pre {
-  margin: 16px 0 !important;
-}
-body.better-headings-author-style .markdown-preview-view hr {
-  margin: 32px 0 !important;
-}
-body.better-headings-author-style .markdown-preview-view pre {
-  background-color: #12121d !important;
-  box-shadow: 2px 2px 7px #5b5b5b;
-}
-body.better-headings-author-style .markdown-preview-view .cm-strong, body.better-headings-author-style .markdown-preview-view strong {
-  padding: 0px !important;
-  color: #ffd2a1;
-  background-clip: unset !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  background-color: unset !important;
-  background-image: unset !important;
-}
-body.better-headings-author-style .markdown-preview-view .cm-strong::selection, body.better-headings-author-style .markdown-preview-view strong::selection {
-  padding: 0px !important;
-  color: #ffd2a1;
-  background-clip: unset !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-}
-body.better-headings-author-style .markdown-preview-view .cm-em, body.better-headings-author-style .markdown-preview-view em, body.better-headings-author-style .markdown-preview-view i {
-  color: #af94e0 !important;
-  font-style: unset !important;
-}
-body.better-headings-author-style .markdown-preview-view mark {
-  border-radius: 3px;
-  padding: 0 5px;
-}
-body.better-headings-author-style .markdown-preview-view span.internal-embed.media-embed.image-embed > img {
-  max-width: 550px !important;
-}
-body.better-headings-author-style .markdown-preview-view h1, body.better-headings-author-style .markdown-preview-view h2, body.better-headings-author-style .markdown-preview-view h3, body.better-headings-author-style .markdown-preview-view h4, body.better-headings-author-style .markdown-preview-view h5, body.better-headings-author-style .markdown-preview-view h6 {
-  font-family: "Publico Text", "Lava Kannada", "jf-jinxuan", "Swei Gothic CJK TC", var(--font-text-theme) !important;
-  letter-spacing: 0.5px !important;
-  word-spacing: -0.6px !important;
-  font-size: 22px !important;
-  margin: 10px 0 0 0 !important;
-  padding: 0 !important;
-  height: 26px;
-  line-height: 26px;
-  vertical-align: text-bottom !important;
-}
-body.better-headings-author-style .markdown-preview-view div:has(> :is(h1, h2, h3, h4, h5, h6)) + div > :not(h1, h2, h3, h4, h5, h6, hr, div) {
-  margin-top: 2px !important;
-}
-body.better-headings-author-style .markdown-preview-view div:has(> h1) + div > :is(h2, h3, h4, h5, h6),
-body.better-headings-author-style .markdown-preview-view div:has(> h2) + div > :is(h3, h4, h5, h6),
-body.better-headings-author-style .markdown-preview-view div:has(> h3) + div > :is(h4, h5, h6),
-body.better-headings-author-style .markdown-preview-view div:has(> h4) + div > :is(h5, h6),
-body.better-headings-author-style .markdown-preview-view div:has(> h5) + div > :is(h6) {
-  margin-top: 5px !important;
-}
-body.better-headings-author-style .markdown-preview-view li {
-  margin-left: 28px !important;
-  z-index: 1;
-}
-body.better-headings-author-style .markdown-preview-view ul > li.task-list-item {
-  padding-left: 0px;
-  text-indent: -16px;
-}
-body.better-headings-author-style .markdown-preview-view .contains-task-list .task-list-item ul.contains-task-list::before {
-  left: -13.6px !important;
-}
-body.better-headings-author-style .markdown-preview-view .heading-collapse-indicator {
-  z-index: 1;
-}
-body.better-headings-author-style .markdown-preview-view .internal-link {
-  transition: all 0.15s ease-in-out !important;
-}
-body.better-headings-author-style .markdown-preview-view .internal-link:hover {
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h1 .internal-link, body.better-headings-author-style .markdown-preview-view h1 .external-link {
-  color: inherit;
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h1 .internal-link:hover, body.better-headings-author-style .markdown-preview-view h1 .external-link:hover {
-  -webkit-text-fill-color: inherit;
-  color: var(--text-normal);
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h2 .internal-link, body.better-headings-author-style .markdown-preview-view h2 .external-link {
-  color: inherit;
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h2 .internal-link:hover, body.better-headings-author-style .markdown-preview-view h2 .external-link:hover {
-  -webkit-text-fill-color: inherit;
-  color: var(--text-normal);
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h3 .internal-link, body.better-headings-author-style .markdown-preview-view h3 .external-link {
-  color: inherit;
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h3 .internal-link:hover, body.better-headings-author-style .markdown-preview-view h3 .external-link:hover {
-  -webkit-text-fill-color: inherit;
-  color: var(--text-normal);
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h4 .internal-link, body.better-headings-author-style .markdown-preview-view h4 .external-link {
-  color: inherit;
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h4 .internal-link:hover, body.better-headings-author-style .markdown-preview-view h4 .external-link:hover {
-  -webkit-text-fill-color: inherit;
-  color: var(--text-normal);
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h5 .internal-link, body.better-headings-author-style .markdown-preview-view h5 .external-link {
-  color: inherit;
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h5 .internal-link:hover, body.better-headings-author-style .markdown-preview-view h5 .external-link:hover {
-  -webkit-text-fill-color: inherit;
-  color: var(--text-normal);
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h6 .internal-link, body.better-headings-author-style .markdown-preview-view h6 .external-link {
-  color: inherit;
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h6 .internal-link:hover, body.better-headings-author-style .markdown-preview-view h6 .external-link:hover {
-  -webkit-text-fill-color: inherit;
-  color: var(--text-normal);
-  transition: all 0.15s ease-in-out;
-}
-body.better-headings-author-style .markdown-preview-view h1 {
-  color: rgb(45, 250, 164) !important;
-}
-body.better-headings-author-style .markdown-preview-view h2 {
-  color: rgb(39, 253, 214) !important;
-}
-body.better-headings-author-style .markdown-preview-view h3 {
-  color: rgb(44, 241, 244) !important;
-}
-body.better-headings-author-style .markdown-preview-view h4 {
-  color: rgb(42, 217, 240) !important;
-}
-body.better-headings-author-style .markdown-preview-view h5 {
-  color: rgb(41, 202, 255) !important;
-}
-body.better-headings-author-style .markdown-preview-view h6 {
-  color: rgb(71, 162, 240) !important;
-}
-body.better-headings-author-style .markdown-preview-view .internal-link {
-  color: #acf0e6;
-}
-body.better-headings-author-style .markdown-preview-view .external-link {
-  color: #f1ddef;
-}
-body.better-headings-author-style .markdown-preview-view .contains-task-list .task-list-item::before {
-  top: 6px;
-}
-body.better-headings-author-style .markdown-preview-view .contains-task-list .task-list-item::after {
-  top: 13px;
-}
-body.better-headings-author-style .markdown-preview-view .rg-nav {
-  display: flex;
-  justify-content: space-between;
-  border: 2px solid rgb(141, 141, 141);
-  border-radius: 5px;
-  margin: 10px 10px 5px;
-  padding: 5px 15px;
-}
-body.better-headings-author-style .cm-content .cm-line {
-  font-size: 16px;
-  line-height: 1.4;
-}
-body.better-headings-author-style .cm-content .cm-formatting.cm-formatting-header.cm-header {
-  opacity: 1;
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content .cm-header-1 {
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content .cm-header-2 {
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content .cm-header-3 {
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content .cm-header-4 {
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content .cm-header-5 {
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content .cm-header-6 {
-  color: #aaaaaa;
-}
-body.better-headings-author-style .cm-content span.cm-hmd-internal-link {
-  color: #cccccc;
-}
-
-/*# sourceMappingURL=styles.css.map */

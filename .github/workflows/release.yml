@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+permissions:
+  contents: write
+  # Required for actions/attest-build-provenance to sign the built assets.
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify manifest version matches the tag
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          manifest="$(node -p "require('./manifest.json').version")"
+          if [ "$tag" != "$manifest" ]; then
+            echo "::error::Tag $tag does not match manifest.json version $manifest"
+            exit 1
+          fi
+          if ! node -p "require('./versions.json')['$tag']" > /dev/null 2>&1; then
+            echo "::error::versions.json has no entry for $tag"
+            exit 1
+          fi
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          awk -v tag="${GITHUB_REF_NAME}" '
+            $0 == "## " tag { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ -s release-notes.md ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::CHANGELOG.md has no section for ${GITHUB_REF_NAME}"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES_FOUND: ${{ steps.notes.outputs.found }}
+        run: |
+          if [ "$NOTES_FOUND" = "true" ]; then
+            notes=(--notes-file release-notes.md)
+          else
+            notes=(--generate-notes)
+          fi
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            "${notes[@]}" \
+            --draft \
+            main.js manifest.json styles.css

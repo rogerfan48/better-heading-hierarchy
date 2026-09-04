@@ -1,0 +1,219 @@
+/* Roger's theme — optional companion snippet for Better Heading Hierarchy.
+
+   Copy into <vault>/.obsidian/snippets/, then enable under
+   Settings -> Appearance -> CSS snippets. Tuned for the default theme, dark mode.
+
+   Fonts it expects: jf-jinxuan (or Swei Gothic CJK TC) for text,
+   JetBrainsMono Nerd Font Mono for code. Falls back cleanly without them.
+
+   `!important` throughout: this overrides Obsidian's app CSS, which uses
+   selectors a snippet cannot outrank. The plugin's own stylesheet has none. */
+
+body {
+  /* Obsidian's hook for the body text font. */
+  --font-text-theme: "jf-jinxuan-book", "jf-jinxuan", "Swei Gothic CJK TC";
+  --file-line-width: none !important;
+
+  --rg-font-code: "JetBrainsMono Nerd Font Mono", "MesloLGS NF";
+  --rg-font-heading: "Publico Text", "Lava Kannada", "jf-jinxuan", "Swei Gothic CJK TC";
+  --rg-cm-header-color: #aaaaaa;
+  --rg-cm-link-color: #cccccc;
+
+  /* Heading text only; guide lines keep the plugin's muted palette.
+     Set --rgh-color-1..6 to these values to tint the lines to match. */
+  --rg-heading-1: rgb(45, 250, 164);
+  --rg-heading-2: rgb(39, 253, 214);
+  --rg-heading-3: rgb(44, 241, 244);
+  --rg-heading-4: rgb(42, 217, 240);
+  --rg-heading-5: rgb(41, 202, 255);
+  --rg-heading-6: rgb(71, 162, 240);
+
+  /* Vertical rhythm. */
+  --rg-p-spacing: 10px;
+  --rg-heading-space-above: 16px;
+  --rg-gap-after-heading: 2px;
+  --rg-gap-between-headings: 5px;
+  --rg-block-margin: 16px;
+  --rg-hr-margin: 32px;
+}
+
+/* Centering is Obsidian's, but only under .is-readable-line-width. Pinning it
+   here keeps the width capped whether that setting is on or off. */
+.cm-sizer,
+.markdown-preview-sizer {
+  margin-inline: auto !important;
+}
+
+.cm-sizer {
+  max-width: min(80vw, 850px) !important;
+}
+
+.markdown-preview-sizer {
+  max-width: min(75vw, 800px) !important;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: var(--rg-font-code), var(--font-text-theme) !important;
+}
+
+a.tag {
+  font-style: normal;
+}
+
+/* Reading view */
+
+.markdown-preview-view {
+  --p-spacing: var(--rg-p-spacing);
+}
+
+.markdown-preview-view table {
+  margin: var(--rg-p-spacing) 0 !important;
+}
+
+.markdown-preview-view blockquote,
+.markdown-preview-view pre {
+  margin: var(--rg-block-margin) 0 !important;
+}
+
+.markdown-preview-view hr {
+  margin: var(--rg-hr-margin) 0 !important;
+}
+
+.markdown-preview-view div:has(> table) {
+  overflow-x: initial !important;
+}
+
+.markdown-preview-view pre {
+  background-color: #12121d !important;
+  box-shadow: 2px 2px 7px #5b5b5b;
+}
+
+.markdown-preview-view strong,
+.markdown-preview-view .cm-strong,
+.markdown-preview-view strong::selection,
+.markdown-preview-view .cm-strong::selection {
+  padding: 0 !important;
+  color: #ffd2a1;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-color: unset !important;
+  background-image: unset !important;
+}
+
+.markdown-preview-view em,
+.markdown-preview-view i,
+.markdown-preview-view .cm-em {
+  color: #af94e0 !important;
+  font-style: unset !important;
+}
+
+.markdown-preview-view mark {
+  border-radius: 3px;
+  padding: 0 5px;
+}
+
+.markdown-preview-view span.internal-embed.media-embed.image-embed > img {
+  max-width: 550px !important;
+}
+
+/* Headings: one size at every level. */
+
+.markdown-preview-view h1,
+.markdown-preview-view h2,
+.markdown-preview-view h3,
+.markdown-preview-view h4,
+.markdown-preview-view h5,
+.markdown-preview-view h6 {
+  font-family: var(--rg-font-heading), var(--font-text-theme) !important;
+  letter-spacing: 0.5px !important;
+  word-spacing: -0.6px !important;
+  font-size: 22px !important;
+  margin: var(--rg-heading-space-above) 0 0 !important;
+  padding: 0 !important;
+  height: 26px;
+  line-height: 26px;
+  vertical-align: text-bottom !important;
+}
+
+.markdown-preview-view h1 { color: var(--rg-heading-1) !important; }
+.markdown-preview-view h2 { color: var(--rg-heading-2) !important; }
+.markdown-preview-view h3 { color: var(--rg-heading-3) !important; }
+.markdown-preview-view h4 { color: var(--rg-heading-4) !important; }
+.markdown-preview-view h5 { color: var(--rg-heading-5) !important; }
+.markdown-preview-view h6 { color: var(--rg-heading-6) !important; }
+
+/* `:has()` is costly on very large notes; delete if scrolling drags. */
+.markdown-preview-view div:has(> :is(h1, h2, h3, h4, h5, h6)) + div > :not(h1, h2, h3, h4, h5, h6, hr, div) {
+  margin-top: var(--rg-gap-after-heading) !important;
+}
+
+.markdown-preview-view div:has(> h1) + div > :is(h2, h3, h4, h5, h6),
+.markdown-preview-view div:has(> h2) + div > :is(h3, h4, h5, h6),
+.markdown-preview-view div:has(> h3) + div > :is(h4, h5, h6),
+.markdown-preview-view div:has(> h4) + div > :is(h5, h6),
+.markdown-preview-view div:has(> h5) + div > :is(h6) {
+  margin-top: var(--rg-gap-between-headings) !important;
+}
+
+.markdown-preview-view .heading-collapse-indicator {
+  z-index: 1;
+}
+
+.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .internal-link,
+.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .external-link {
+  color: inherit;
+  transition: all 0.15s ease-in-out;
+}
+
+.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .internal-link:hover,
+.markdown-preview-view :is(h1, h2, h3, h4, h5, h6) .external-link:hover {
+  color: var(--text-normal);
+  -webkit-text-fill-color: inherit;
+}
+
+.markdown-preview-view .internal-link {
+  color: #acf0e6;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.markdown-preview-view .external-link {
+  color: #f1ddef;
+}
+
+.markdown-preview-view li {
+  margin-left: 28px !important;
+  z-index: 1;
+}
+
+.markdown-preview-view .rg-nav {
+  display: flex;
+  justify-content: space-between;
+  border: 2px solid rgb(141, 141, 141);
+  border-radius: 5px;
+  margin: 10px 10px 5px;
+  padding: 5px 15px;
+}
+
+/* Editing view */
+
+.cm-content .cm-line {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.cm-content .cm-formatting.cm-formatting-header.cm-header,
+.cm-content .cm-header-1,
+.cm-content .cm-header-2,
+.cm-content .cm-header-3,
+.cm-content .cm-header-4,
+.cm-content .cm-header-5,
+.cm-content .cm-header-6 {
+  opacity: 1;
+  color: var(--rg-cm-header-color);
+}
+
+.cm-content span.cm-hmd-internal-link {
+  color: var(--rg-cm-link-color);
+}

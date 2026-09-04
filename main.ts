@@ -1,182 +1,157 @@
-import { App, MarkdownPostProcessor, MarkdownPostProcessorContext, MarkdownRenderChild, MarkdownView, Plugin, PluginSettingTab, Setting, TFile } from "obsidian";
+import { Extension } from "@codemirror/state";
+import { App, MarkdownView, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 
-const AUTHOR_STYLE_CLASS = 'better-headings-author-style';
-
-interface BetterHeadingHierarchySettings {
-    enableAdditionalCss: boolean;
-}
-
-const DEFAULT_SETTINGS: BetterHeadingHierarchySettings = {
-    enableAdditionalCss: true,
-};
+import { hierarchyGuideExtension } from "./src/live-preview";
+import { createReadingViewProcessor } from "./src/reading-view";
+import { BetterHeadingHierarchySettings, DEFAULT_SETTINGS } from "./src/settings";
+import { SNIPPET_NAME, describeSnippet, getSnippetStatus, installSnippet } from "./src/snippet";
 
 export default class BetterHeadingHierarchyPlugin extends Plugin {
-    settings: BetterHeadingHierarchySettings;
-    prevHeading: string | null;
-    isPrevHeading: boolean;
+  settings: BetterHeadingHierarchySettings;
 
-    async onload() {
-        await this.loadSettings();
-        
-        this.updateBodyClass();
+  // Mutated in place; updateOptions() re-reads it, which is how the editing
+  // view toggle applies without a restart.
+  private readonly editorExtensions: Extension[] = [];
 
-        this.addSettingTab(new BetterHeadingHierarchySettingTab(this.app, this));
+  async onload() {
+    await this.loadSettings();
 
-        this.prevHeading = null;
-        this.isPrevHeading = false;
+    this.addSettingTab(new BetterHeadingHierarchySettingTab(this.app, this));
 
-        this.registerEvent(
-            this.app.workspace.on("layout-change", () => {
-                const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-                if (activeView && activeView.getMode() === "preview") {
-                    this.resetState();
-                    activeView.previewMode.rerender(true);
-                }
-            }),
-        );
+    this.registerMarkdownPostProcessor(createReadingViewProcessor(this));
 
-        this.registerMarkdownPostProcessor(this.styleChanger);
-    }
+    this.registerEditorExtension(this.editorExtensions);
+    this.applyEditorExtensions();
 
-    onunload() {
-        this.resetState();
-        document.body.classList.remove(AUTHOR_STYLE_CLASS);
-    }
-    
-    resetState() {
-        this.prevHeading = null;
-        this.isPrevHeading = false;
-    }
-
-    styleChanger: MarkdownPostProcessor = async (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-        if (!el.children.length) return;
-
-        const firstChild = el.children[0] as HTMLElement;
-        const tagName = firstChild.tagName;
-
-        if (tagName.startsWith("H") && tagName.length === 2) {
-            const level = parseInt(tagName[1]);
-            if (level >= 1 && level <= 6) {
-                let top5 = false;
-                if (this.isPrevHeading && this.prevHeading && level > parseInt(this.prevHeading[5])) {
-                    top5 = true;
-                }
-
-                this.prevHeading = `rgh-h${level}`;
-                el.classList.add("rgh-div-head", `${this.prevHeading}-head`);
-                
-                for(let i = 1; i < level; i++) {
-                    this.createIndentDiv(el, ctx, `h${i}`, false, top5);
-                }
-                
-                this.isPrevHeading = true;
-            }
-        } else {
-             if (this.prevHeading === null) {
-                return;
-            }
-
-            el.classList.add("rgh-div", this.prevHeading);
-
-            const prevLevel = parseInt(this.prevHeading[5]);
-            if (prevLevel < 1 || prevLevel > 6) {
-                console.warn("ERROR: Invalid previous heading level at", el, "\nthis.prevHeading:", this.prevHeading);
-                return;
-            }
-
-            switch (prevLevel.toString()) {
-                case "6": this.createIndentDiv(el, ctx, "h6", this.isPrevHeading); // falls through
-                case "5": this.createIndentDiv(el, ctx, "h5", this.isPrevHeading); // falls through
-                case "4": this.createIndentDiv(el, ctx, "h4", this.isPrevHeading); // falls through
-                case "3": this.createIndentDiv(el, ctx, "h3", this.isPrevHeading); // falls through
-                case "2": this.createIndentDiv(el, ctx, "h2", this.isPrevHeading); // falls through
-                case "1": this.createIndentDiv(el, ctx, "h1", this.isPrevHeading);
-            }
-            this.isPrevHeading = false;
-        }
-
-        const sectionInfo = ctx.getSectionInfo(el);
-        if (sectionInfo) {
-            const file = this.app.vault.getAbstractFileByPath(ctx.sourcePath);
-            if (file instanceof TFile) {
-                const fileContents = await this.app.vault.cachedRead(file);
-                const totalLines = fileContents.split("\n").length;
-                if (sectionInfo.lineEnd >= totalLines - 1) {
-                    this.resetState();
-                }
-            }
-        }
-    };
-    
-    createIndentDiv(parentEl: HTMLElement, ctx: MarkdownPostProcessorContext, type: string, isTopElement: boolean, top5 = false) {
-        const newDiv = parentEl.createDiv({
-            cls: ["rgh-line", `rgh-line-${type}`]
+    if (this.settings.autoInstallSnippet) {
+      this.app.workspace.onLayoutReady(() => {
+        installSnippet(this.app, { overwrite: false }).catch(() => {
+          new Notice("Better Heading Hierarchy: could not install the companion snippet.");
         });
-
-        if (this.prevHeading != null && type !== `h${parseInt(this.prevHeading[5])}`) {
-            const prevLevel = parseInt(this.prevHeading[5]);
-            const currentLevel = parseInt(type[1]);
-            if(prevLevel > currentLevel) {
-                 newDiv.addClass(`rgh-left${(prevLevel - currentLevel)}0`);
-            }
-        }
-
-        if (isTopElement) newDiv.addClass("rgh-top2");
-        if (top5) newDiv.addClass("rgh-top5");
-        
-        const firstChild = parentEl.children[0];
-        if (firstChild) {
-            if (firstChild.tagName === "BLOCKQUOTE" || firstChild.tagName === "PRE") {
-                newDiv.addClass("rgh-top16");
-            }
-            if (firstChild.tagName === "HR") {
-                newDiv.addClass("rgh-top32");
-            }
-        }
-        
-        ctx.addChild(new MarkdownRenderChild(newDiv));
+      });
     }
+  }
 
-    private updateBodyClass() {
-        if (this.settings.enableAdditionalCss) {
-            document.body.classList.add(AUTHOR_STYLE_CLASS);
-        } else {
-            document.body.classList.remove(AUTHOR_STYLE_CLASS);
-        }
-    }
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+  }
 
-    async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-    }
+  async saveSettings() {
+    await this.saveData(this.settings);
+  }
 
-    async saveSettings() {
-        await this.saveData(this.settings);
-        this.updateBodyClass();
+  applyEditorExtensions() {
+    this.editorExtensions.length = 0;
+    if (this.settings.showInEditingView) {
+      this.editorExtensions.push(hierarchyGuideExtension);
     }
+    this.app.workspace.updateOptions();
+  }
+
+  rerenderOpenPreviews() {
+    for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
+      const view = leaf.view;
+      if (view instanceof MarkdownView && view.getMode() === "preview") {
+        view.previewMode.rerender(true);
+      }
+    }
+  }
 }
 
 class BetterHeadingHierarchySettingTab extends PluginSettingTab {
-    plugin: BetterHeadingHierarchyPlugin;
+  plugin: BetterHeadingHierarchyPlugin;
 
-    constructor(app: App, plugin: BetterHeadingHierarchyPlugin) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
+  constructor(app: App, plugin: BetterHeadingHierarchyPlugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
 
-    display(): void {
-        const { containerEl } = this;
-        containerEl.empty();
+  display(): void {
+    const { containerEl } = this;
+    containerEl.empty();
 
-        new Setting(containerEl)
-            .setName("Enable additional author-styled CSS")
-            .setDesc(
-                "It is recommended to use the default theme and enable this setting to get the best experience—just like I do.",
-            )
-            .addToggle((toggle) =>
-                toggle.setValue(this.plugin.settings.enableAdditionalCss).onChange(async (value) => {
-                    this.plugin.settings.enableAdditionalCss = value;
-                    await this.plugin.saveSettings();
-                }),
-            );
-    }
+    new Setting(containerEl).setName("Guide lines").setHeading();
+
+    new Setting(containerEl)
+      .setName("Reading view")
+      .setDesc("Show guide lines in rendered notes.")
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.showInReadingView).onChange(async (value) => {
+          this.plugin.settings.showInReadingView = value;
+          await this.plugin.saveSettings();
+          this.plugin.rerenderOpenPreviews();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName("Editing view")
+      .setDesc("Show guide lines in Live Preview and Source mode.")
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.showInEditingView).onChange(async (value) => {
+          this.plugin.settings.showInEditingView = value;
+          await this.plugin.saveSettings();
+          this.plugin.applyEditorExtensions();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName("Recommended styling")
+      .setDesc(
+        "A CSS snippet with the spacing and heading style the guide lines were designed " +
+          "around. Fonts are not included.",
+      )
+      .setHeading();
+
+    void this.renderSnippet(containerEl.createDiv());
+  }
+
+  private async renderSnippet(containerEl: HTMLElement) {
+    const status = await getSnippetStatus(this.app);
+    const snippet = describeSnippet(status);
+    containerEl.empty();
+
+    new Setting(containerEl)
+      .setName(snippet.state)
+      .setDesc(snippet.action)
+      .addButton((button) =>
+        button
+          .setButtonText(snippet.button)
+          .setCta()
+          .onClick(async () => {
+            button.setDisabled(true);
+            try {
+              const next = await installSnippet(this.app, { overwrite: snippet.overwrite });
+              new Notice(
+                next.enabled
+                  ? "Snippet installed and turned on."
+                  : `Written to snippets/${SNIPPET_NAME}.css — turn it on under Appearance.`,
+              );
+            } catch {
+              new Notice("Could not write the snippet.");
+            }
+            await this.renderSnippet(containerEl);
+          }),
+      );
+
+    new Setting(containerEl)
+      .setName("Install on startup")
+      .setDesc("Put the file back if it goes missing. Never overwrites your edits.")
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.autoInstallSnippet).onChange(async (value) => {
+          this.plugin.settings.autoInstallSnippet = value;
+          await this.plugin.saveSettings();
+          if (value) await installSnippet(this.app, { overwrite: false });
+          await this.renderSnippet(containerEl);
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName("Fonts and customization")
+      .setDesc("Which fonts the snippet expects, and every CSS variable you can override.")
+      .addButton((button) =>
+        button.setButtonText("Open documentation").onClick(() => {
+          window.open("https://github.com/rogerfan48/better-heading-hierarchy#readme");
+        }),
+      );
+  }
 }
