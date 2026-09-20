@@ -2,6 +2,13 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 2.1.1
+
+### Changed
+
+- Settings are declared through Obsidian's declarative settings API, so they show up in the
+  settings search on 1.13 and later. Older versions render the same tab as before.
+
 ## 2.1.0
 
 ### Fixed

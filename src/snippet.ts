@@ -59,7 +59,7 @@ export interface SnippetPresentation {
 export function describeSnippet(status: SnippetStatus): SnippetPresentation {
   if (!status.exists) {
     return {
-      state: "Status: not installed",
+      state: "Not installed",
       action: `Writes ${SNIPPET_NAME}.css into your snippets folder and turns it on.`,
       button: "Install and enable",
       overwrite: false,
@@ -68,7 +68,7 @@ export function describeSnippet(status: SnippetStatus): SnippetPresentation {
 
   if (!status.matchesBundled) {
     return {
-      state: "Status: installed, edited by you",
+      state: "Installed, edited by you",
       action: "Restoring overwrites the file — your edits are lost.",
       button: "Restore bundled version",
       overwrite: true,
@@ -77,7 +77,7 @@ export function describeSnippet(status: SnippetStatus): SnippetPresentation {
 
   if (!status.canToggle) {
     return {
-      state: "Status: installed",
+      state: "Installed",
       action: "Turn it on yourself under Appearance → CSS snippets.",
       button: "Rewrite file",
       overwrite: true,
@@ -86,7 +86,7 @@ export function describeSnippet(status: SnippetStatus): SnippetPresentation {
 
   if (!status.enabled) {
     return {
-      state: "Status: installed, turned off",
+      state: "Installed, turned off",
       action: "Turns it back on. The file is left as it is.",
       button: "Turn on",
       overwrite: false,
@@ -94,7 +94,7 @@ export function describeSnippet(status: SnippetStatus): SnippetPresentation {
   }
 
   return {
-    state: "Status: installed and active",
+    state: "Installed and active",
     action: "Rewrites the file with the bundled version, in case something looks wrong.",
     button: "Reinstall",
     overwrite: true,
