@@ -14,8 +14,9 @@ one. This plugin colors and connects that structure instead of making you infer 
   each block of content is indented to sit beside the line of the heading that owns it.
 - **Works while you edit and while you read.** Reading view and the editor (Live Preview and Source
   mode) are rendered by separate engines; both are supported, and each can be turned off on its own.
-- **Handles messy documents.** Skipped levels (`#` straight to `###`), headings inside fenced code
-  blocks, and headings in YAML frontmatter are all treated correctly.
+- **Handles messy documents.** Skipped levels (`#` straight to `###`), setext headings, and `#`
+  lines inside code, math, comments, HTML, lists or frontmatter are treated the way Obsidian does.
+- **Runs through tables, callouts, math and embeds** in both views, at the right indent.
 - **Fully restyleable.** Colors, spacing and line thickness are CSS variables — no forks or
   `!important` battles needed. See [Customizing the look](#customizing-the-look).
 
@@ -75,9 +76,9 @@ to the plugin will not overwrite your changes.
 | `--rgh-bleed` | `2.5em` | How far a line reaches up into the gap above its block, so segments join. |
 | `--rgh-start-bleed` | `4px` | Same, but for the first block of a section, tucking the line under its heading. |
 | `--rgh-tail` | `2px` | Overshoot below each block, so segments never hairline-gap. |
-| `--rgh-editor-bleed` | `1px` | Overshoot above and below each editor line, for the same reason. |
 
-A separate, slightly darker color ramp is applied under `body.theme-light`.
+A separate, slightly darker color ramp applies under `body.theme-light`; a plain `body { … }` rule
+in your snippet overrides either.
 
 For example, to get wider spacing and a monochrome accent-colored set of lines:
 
@@ -133,18 +134,21 @@ everything else still applies.
 
 ## How it works
 
-Reading view and the editor need two different implementations, so the plugin ships both:
+Both views share one scan of the note's text that records, per line, how many guide lines it gets
+and whether it is a heading. It follows Obsidian's own parser and costs about 2 ms for a
+20,000-line note.
 
-- **Reading view** uses a Markdown post-processor. For each rendered block it looks up the block's
-  position in Obsidian's metadata cache, derives the heading level that owns it, and inserts one
-  absolutely positioned element per guide line. It is stateless — the depth of a block depends only
-  on the file's cached structure, never on what was rendered before it — so multiple panes and lazy
-  scroll-rendering both stay correct.
-- **The editor** uses a CodeMirror 6 view plugin. It scans the document once per edit to record each
-  line's heading depth, then decorates only the lines currently on screen. The lines themselves are
-  drawn with a single pseudo-element per row, so no extra DOM is added to the editor. The indent is
-  a transparent left border: Obsidian sets `padding-inline-start` inline on list lines for their
-  hanging indent and forces every line to zero margin, so the border is the only edge free to use.
+- **Reading view** uses a Markdown post-processor. Each block reports its line range and the text
+  it was rendered from, so its depth never lags behind an edit; one absolutely positioned element
+  per guide line is inserted. Obsidian reuses blocks whose markup did not change, so the plugin
+  also refreshes them when a heading above them changes. A table's horizontal scrolling is moved
+  to an inner wrapper so the block stays a plain box.
+- **The editor** insets each row by its depth — a `.cm-line` through a line decoration, a block
+  widget (table, callout, math, embed) through a class on its DOM, since decorations cannot reach
+  it — and draws the guide lines on a CodeMirror layer beneath the text, one rectangle per unbroken
+  run of rows, so nothing in a row's own DOM can clip or move them. The inset is a transparent left
+  border: Obsidian sets `padding-inline-start` inline on list lines and forces every line to zero
+  margin.
 
 Installing the companion snippet writes a file through Obsidian's public vault API. *Enabling* a
 snippet has no public API, so that step uses an internal one; if it is ever removed, the file is
@@ -159,6 +163,8 @@ in its settings, which hands this readme's URL to your browser.
   source line range for embedded content, which is what the plugin needs to place the lines.
 - Guide lines follow the *rendered* block structure, so content inside a table cell or a callout is
   drawn relative to the block as a whole rather than per line.
+- In the editor, a table wider than the page scrolls inside Obsidian's widget, so its cells slide
+  under the guide lines while scrolled.
 
 ## Contributing
 

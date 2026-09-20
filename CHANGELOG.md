@@ -2,6 +2,30 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 2.1.0
+
+### Fixed
+
+- Tables, callouts, math blocks and embeds in the editor had no guide lines and no indent (#4).
+  Live Preview renders them as widgets that line decorations cannot reach; the editor's guide lines
+  are now drawn on a CodeMirror layer and run through them.
+- Tables in Reading view clipped the guide lines and grew a stray scrollbar, because Obsidian sets
+  `overflow-x` inline on a table's block. The scrolling now lives on an inner wrapper, and the
+  companion snippet's `!important` workaround is gone.
+- A snippet's `body { --rgh-color-4: … }` did not apply in a light theme (#3). Both color ramps are
+  now declared at zero specificity.
+- Reading view went stale after editing a heading: Obsidian reuses blocks whose markup did not
+  change, and the metadata cache lags behind the text. Depths now come from the rendered text, and
+  reused blocks are refreshed.
+- Turning *Reading view* off left the indent on reused blocks.
+
+### Changed
+
+- One scanner decides what is a heading in both views, following Obsidian's parser: `#` inside
+  math, `%%` comments, HTML blocks, list items and quotes is not one, and setext underlines are.
+- `rgh-section-*` classes come from the rendered block instead of the metadata cache.
+- `--rgh-editor-bleed` is gone; the editor's guide lines are continuous runs.
+
 ## 2.0.1
 
 ### Changed

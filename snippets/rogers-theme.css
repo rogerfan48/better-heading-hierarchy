@@ -90,13 +90,6 @@ a.tag {
 }
 
 
-/* The guide lines overhang the bottom of their block by --rgh-tail, which turns
-   a table block into a scroll container because Obsidian gives it a non-visible
-   overflow. Restoring visible overflow drops the stray scrollbar. */
-.markdown-preview-view .rgh-section-table {
-  overflow-x: initial !important;
-}
-
 .markdown-preview-view.markdown-preview-view pre {
   background-color: #12121d;
   box-shadow: 2px 2px 7px #5b5b5b;
