@@ -1,4 +1,5 @@
 import { Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import {
   App,
   MarkdownView,
@@ -7,11 +8,13 @@ import {
   PluginSettingTab,
   Setting,
   SettingDefinitionItem,
+  TFile,
+  normalizePath,
 } from "obsidian";
 
-import { hierarchyGuideExtension } from "./src/live-preview";
+import { hierarchyGuideExtension, recheckGuides } from "./src/live-preview";
 import { createReadingViewProcessor } from "./src/reading-view";
-import { BetterHeadingHierarchySettings, DEFAULT_SETTINGS } from "./src/settings";
+import { BetterHeadingHierarchySettings, DEFAULT_SETTINGS, NOTE_PROPERTY } from "./src/settings";
 import { SNIPPET_NAME, describeSnippet, getSnippetStatus, installSnippet } from "./src/snippet";
 
 export default class BetterHeadingHierarchyPlugin extends Plugin {
@@ -21,8 +24,10 @@ export default class BetterHeadingHierarchyPlugin extends Plugin {
   // view toggle applies without a restart.
   private readonly editorExtensions: Extension[] = [];
 
+  private readonly noteOverrides = new Map<string, unknown>();
+
   async onload() {
-    await this.loadSettings();
+    const isFirstRun = !(await this.loadSettings());
 
     this.addSettingTab(new BetterHeadingHierarchySettingTab(this.app, this));
 
@@ -31,48 +36,73 @@ export default class BetterHeadingHierarchyPlugin extends Plugin {
     this.registerEditorExtension(this.editorExtensions);
     this.applyEditorExtensions();
 
-    if (this.settings.autoInstallSnippet) {
+    this.registerEvent(
+      this.app.metadataCache.on("changed", (file, _data, cache) => {
+        const override: unknown = cache.frontmatter?.[NOTE_PROPERTY];
+        if (override === this.noteOverrides.get(file.path)) return;
+        this.noteOverrides.set(file.path, override);
+        this.refreshOpenNotes(file);
+      }),
+    );
+    this.registerEvent(
+      this.app.vault.on("rename", (file) => {
+        if (file instanceof TFile) this.refreshOpenNotes(file);
+      }),
+    );
+
+    if (this.settings.autoInstallSnippet || isFirstRun) {
       this.app.workspace.onLayoutReady(() => {
         installSnippet(this.app, { overwrite: false }).catch(() => {
           new Notice("Could not install the companion snippet.");
         });
       });
     }
+    if (isFirstRun) await this.saveSettings();
   }
 
-  async loadSettings() {
+  async loadSettings(): Promise<boolean> {
     const stored = (await this.loadData()) as Partial<BetterHeadingHierarchySettings> | null;
     this.settings = Object.assign({}, DEFAULT_SETTINGS, stored);
+    return stored !== null;
   }
 
   async saveSettings() {
     await this.saveData(this.settings);
   }
 
+  showsGuidesIn(path: string): boolean {
+    const override: unknown = this.app.metadataCache.getCache(path)?.frontmatter?.[NOTE_PROPERTY];
+    if (typeof override === "boolean") return override;
+    return !this.settings.excludedFolders.split("\n").some((line) => {
+      const folder = line.trim();
+      return folder !== "" && path.startsWith(`${normalizePath(folder)}/`);
+    });
+  }
+
   applyEditorExtensions() {
     this.editorExtensions.length = 0;
     if (this.settings.showInEditingView) {
-      this.editorExtensions.push(hierarchyGuideExtension);
+      this.editorExtensions.push(hierarchyGuideExtension((path) => this.showsGuidesIn(path)));
     }
     this.app.workspace.updateOptions();
   }
 
-  rerenderOpenPreviews() {
+  refreshOpenNotes(file?: TFile) {
     for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
       const view = leaf.view;
-      if (view instanceof MarkdownView && view.getMode() === "preview") {
-        view.previewMode.rerender(true);
-      }
+      if (!(view instanceof MarkdownView) || (file && view.file !== file)) continue;
+      if (view.getMode() === "preview") view.previewMode.rerender(true);
+      (view.editor as { cm?: EditorView }).cm?.dispatch({ effects: recheckGuides.of(null) });
     }
   }
 }
 
 type SettingKey = keyof BetterHeadingHierarchySettings;
 
-interface ToggleRow {
+interface ControlRow {
   name: string;
   desc: string;
-  control: { type: "toggle"; key: SettingKey };
+  control: { type: "toggle" | "textarea"; key: SettingKey; placeholder?: string };
 }
 
 interface CustomRow {
@@ -83,7 +113,7 @@ interface CustomRow {
 
 interface Section {
   heading: string;
-  items: (ToggleRow | CustomRow)[];
+  items: (ControlRow | CustomRow)[];
 }
 
 const SNIPPET_PURPOSE =
@@ -112,6 +142,11 @@ class BetterHeadingHierarchySettingTab extends PluginSettingTab {
             name: "Editing view",
             desc: "Show guide lines in live preview and source mode.",
             control: { type: "toggle", key: "showInEditingView" },
+          },
+          {
+            name: "Excluded folders",
+            desc: `One folder per line, subfolders included. A note's ${NOTE_PROPERTY} property overrides this.`,
+            control: { type: "textarea", key: "excludedFolders", placeholder: "Templates\nJournal" },
           },
         ],
       },
@@ -160,12 +195,13 @@ class BetterHeadingHierarchySettingTab extends PluginSettingTab {
 
   async setControlValue(key: string, value: unknown): Promise<void> {
     const setting = key as SettingKey;
-    this.plugin.settings[setting] = value as boolean;
+    this.plugin.settings[setting] = value as never;
     await this.plugin.saveSettings();
 
     switch (setting) {
       case "showInReadingView":
-        this.plugin.rerenderOpenPreviews();
+      case "excludedFolders":
+        this.plugin.refreshOpenNotes();
         break;
       case "showInEditingView":
         this.plugin.applyEditorExtensions();
@@ -189,6 +225,14 @@ class BetterHeadingHierarchySettingTab extends PluginSettingTab {
         if (row.desc) setting.setDesc(row.desc);
         if ("render" in row) {
           row.render(setting);
+        } else if (row.control.type === "textarea") {
+          const { key, placeholder = "" } = row.control;
+          setting.addTextArea((text) =>
+            text
+              .setPlaceholder(placeholder)
+              .setValue(this.getControlValue(key) as string)
+              .onChange((value) => this.setControlValue(key, value)),
+          );
         } else {
           const { key } = row.control;
           setting.addToggle((toggle) =>

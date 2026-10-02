@@ -102,8 +102,6 @@ function decorateBlock(el: HTMLElement, section: MarkdownSectionInformation) {
   }
 }
 
-type SectionLookup = (el: HTMLElement) => MarkdownSectionInformation | null;
-
 export function createReadingViewProcessor(
   plugin: BetterHeadingHierarchyPlugin,
 ): MarkdownPostProcessor {
@@ -112,17 +110,20 @@ export function createReadingViewProcessor(
   // edit to a heading — or deleting one — leaves every reused block below it
   // stale. Every such edit does add or remove a block element though, so
   // watching the section container catches them all.
-  const lookups = new WeakMap<HTMLElement, SectionLookup>();
+  const contexts = new WeakMap<HTMLElement, MarkdownPostProcessorContext>();
   const pending = new Set<HTMLElement>();
 
+  const showsGuides = (ctx: MarkdownPostProcessorContext) =>
+    plugin.settings.showInReadingView && plugin.showsGuidesIn(ctx.sourcePath);
+
   function refresh(container: HTMLElement) {
-    const getSectionInfo = lookups.get(container);
-    if (!getSectionInfo || !plugin.settings.showInReadingView) return;
+    const ctx = contexts.get(container);
+    if (!ctx || !showsGuides(ctx)) return;
     for (const child of Array.from(container.children)) {
       if (!child.instanceOf(HTMLElement) || !child.children.length || child.hasClass("mod-ui")) {
         continue;
       }
-      const section = getSectionInfo(child);
+      const section = ctx.getSectionInfo(child);
       if (section) decorateBlock(child, section);
     }
   }
@@ -143,22 +144,23 @@ export function createReadingViewProcessor(
 
   return (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
     if (!el.children.length) return;
-    if (!plugin.settings.showInReadingView) {
+
+    // Undocumented but what every reading view passes; a block being processed
+    // is often not attached yet, so its parent is only a fallback. The context
+    // is replaced on every block so a container reused for another note never
+    // answers with the previous note's path.
+    const container = (ctx as { containerEl?: HTMLElement }).containerEl ?? el.parentElement;
+    if (container) {
+      if (!contexts.has(container)) observer.observe(container, { childList: true });
+      contexts.set(container, ctx);
+    }
+
+    if (!showsGuides(ctx)) {
       clearBlock(el);
       return;
     }
 
     const section = ctx.getSectionInfo(el);
-    if (!section) return;
-
-    decorateBlock(el, section);
-
-    // Undocumented but what every reading view passes; a block being processed
-    // is often not attached yet, so its parent is only a fallback.
-    const container = (ctx as { containerEl?: HTMLElement }).containerEl ?? el.parentElement;
-    if (container && !lookups.has(container)) {
-      lookups.set(container, (target) => ctx.getSectionInfo(target));
-      observer.observe(container, { childList: true });
-    }
+    if (section) decorateBlock(el, section);
   };
 }

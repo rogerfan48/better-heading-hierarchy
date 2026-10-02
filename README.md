@@ -43,6 +43,10 @@ the plugin.
 | --- | --- | --- |
 | Reading view | on | Show guide lines in rendered notes. |
 | Editing view | on | Show guide lines in Live Preview and Source mode. |
+| Excluded folders | empty | Folders, one per line, whose notes (subfolders included) get no guide lines. |
+
+A single note can opt out with a `heading-guides: false` property, or opt back in inside an excluded
+folder with `heading-guides: true`.
 
 ### Recommended styling
 
@@ -96,20 +100,19 @@ body {
 }
 ```
 
-## Optional: the author's theme snippet
+## The author's theme snippet
 
 The screenshot above is not what the plugin looks like on its own — it also uses my personal
 styling: neon heading text against the muted guide lines, equal-sized headings, a tighter vertical
 rhythm, a wider centered page, and custom fonts. Up to version 1.x that styling was bundled into the
 plugin behind an *additional author-styled CSS* toggle. It is now a plain CSS snippet instead, because it is a matter of personal
-taste rather than plugin behavior, and keeping it separate lets the plugin stay neutral toward
-whatever theme you use.
+taste rather than plugin behavior.
 
-The plugin ships a copy of it: open its settings and press **Install and enable** under *Companion
-snippet*, and it is written to `.obsidian/snippets/` and switched on for you. You can also copy
-[`snippets/rogers-theme.css`](snippets/rogers-theme.css) in by hand and enable it under **Settings →
-Appearance → CSS snippets**. Once installed the file is yours — edit it freely, the plugin will not
-overwrite your changes unless you explicitly ask it to.
+The plugin writes it to `.obsidian/snippets/` and turns it on the first time it loads. To go without
+it, turn off `rogers-theme` under **Settings → Appearance → CSS snippets**. If the file goes missing,
+press **Install and enable** under *Companion snippet* in the plugin's settings. Once installed the
+file is yours — edit it freely, the plugin will not overwrite your changes unless you explicitly ask
+it to.
 
 It is written for the default Obsidian theme in dark mode, and every section of it is commented and
 safe to delete piece by piece. Its page width works through Obsidian's own `--file-line-width`, so

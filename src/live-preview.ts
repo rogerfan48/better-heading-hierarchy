@@ -1,4 +1,11 @@
-import { Extension, RangeSetBuilder, StateField } from "@codemirror/state";
+import {
+  EditorState,
+  Extension,
+  Facet,
+  RangeSetBuilder,
+  StateEffect,
+  StateField,
+} from "@codemirror/state";
 import {
   Decoration,
   DecorationSet,
@@ -9,14 +16,38 @@ import {
   ViewUpdate,
   layer,
 } from "@codemirror/view";
+import { editorInfoField } from "obsidian";
 
 import { LineHierarchy, MAX_HEADING_LEVEL, computeLineHierarchy, depthClass } from "./hierarchy";
 
-const hierarchyField = StateField.define<LineHierarchy>({
-  create: (state) => computeLineHierarchy(Array.from(state.doc.iterLines())),
-  update: (value, tr) =>
-    tr.docChanged ? computeLineHierarchy(Array.from(tr.newDoc.iterLines())) : value,
+const showsGuidesFacet = Facet.define<(path: string) => boolean, (path: string) => boolean>({
+  combine: (predicates) => predicates[0] ?? (() => true),
 });
+
+export const recheckGuides = StateEffect.define<null>();
+
+const NO_GUIDES: LineHierarchy = {
+  depths: new Uint8Array(0),
+  headings: new Uint8Array(0),
+  above: new Uint8Array(0),
+};
+
+function hierarchyOf(state: EditorState): LineHierarchy {
+  const file = state.field(editorInfoField, false)?.file;
+  if (file && !state.facet(showsGuidesFacet)(file.path)) return NO_GUIDES;
+  return computeLineHierarchy(Array.from(state.doc.iterLines()));
+}
+
+const hierarchyField = StateField.define<LineHierarchy>({
+  create: hierarchyOf,
+  update: (value, tr) =>
+    tr.docChanged || tr.effects.some((effect) => effect.is(recheckGuides))
+      ? hierarchyOf(tr.state)
+      : value,
+});
+
+const hierarchyChanged = (update: ViewUpdate) =>
+  update.startState.field(hierarchyField) !== update.state.field(hierarchyField);
 
 function rowDepth(view: EditorView, pos: number): number {
   const { depths } = view.state.field(hierarchyField);
@@ -71,7 +102,7 @@ class InsetView implements PluginValue {
   }
 
   update(update: ViewUpdate) {
-    if (update.docChanged || update.viewportChanged) {
+    if (hierarchyChanged(update) || update.viewportChanged) {
       this.decorations = this.buildVisibleDecorations(update.view);
     }
     update.view.requestMeasure(this.tagWidgets);
@@ -197,11 +228,12 @@ function guideMarkers(view: EditorView): GuideMarker[] {
 const guideLayer = layer({
   above: false,
   class: "rgh-guide-layer",
-  update: (update) => update.docChanged || update.viewportChanged,
+  update: (update) => update.docChanged || update.viewportChanged || hierarchyChanged(update),
   markers: guideMarkers,
 });
 
-export const hierarchyGuideExtension: Extension = [
+export const hierarchyGuideExtension = (showsGuidesIn: (path: string) => boolean): Extension => [
+  showsGuidesFacet.of(showsGuidesIn),
   hierarchyField,
   ViewPlugin.fromClass(InsetView, { decorations: (value) => value.decorations }),
   guideLayer,

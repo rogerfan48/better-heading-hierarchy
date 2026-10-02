@@ -2,6 +2,18 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 2.2.0
+
+### Added
+
+- *Excluded folders* setting: notes in these folders and their subfolders get no guide lines or
+  indent. A note can opt out on its own with `heading-guides: false`, or back in with `true`.
+
+### Changed
+
+- The companion snippet is installed and turned on the first time the plugin loads, including
+  existing installs that never changed a setting. Turn it off under Appearance → CSS snippets.
+
 ## 2.1.1
 
 ### Changed
