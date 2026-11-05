@@ -169,6 +169,11 @@ in its settings, which hands this readme's URL to your browser.
 - In the editor, a table wider than the page scrolls inside Obsidian's widget, so its cells slide
   under the guide lines while scrolled.
 
+## Related
+
+Also by me: [Recursive Fold](https://github.com/rogerfan48/recursive-fold), which folds or unfolds a
+heading together with everything nested under it, in one click.
+
 ## Contributing
 
 Bug reports and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for how to build
